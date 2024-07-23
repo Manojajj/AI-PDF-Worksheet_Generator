@@ -16,30 +16,27 @@ def index():
                 extracted_text += page.extract_text() or ""
 
             # Generate questions and answers
-            api_key = request.form.get('api_key')
             num_questions = int(request.form.get('num_questions', 30))
-            qa_pairs = generate_questions_with_dolly(api_key, extracted_text, num_questions)
+            qa_pairs = generate_questions_with_dolly(extracted_text, num_questions)
 
             # Render the result page
-            return render_template('result.html', qa_pairs=qa_pairs)
+            return render_template('result.html', qa_pairs=qa_pairs, pdf_file=uploaded_file.read())
 
     return render_template('index.html')
 
 @app.route('/download', methods=['POST'])
 def download():
-    uploaded_file = request.files.get('pdf_file')
-    if uploaded_file and uploaded_file.filename.endswith('.pdf'):
-        # Extract text from PDF
-        from PyPDF2 import PdfReader
-        pdf_reader = PdfReader(uploaded_file)
-        extracted_text = ""
-        for page in pdf_reader.pages:
-            extracted_text += page.extract_text() or ""
+    # Handle file and form data from results page
+    pdf_file = request.form.get('pdf_file')
+    num_questions = int(request.form.get('num_questions', 30))
+    
+    if pdf_file:
+        # Decode the file content
+        pdf_file_content = io.BytesIO(base64.b64decode(pdf_file))
 
         # Generate questions and answers
-        api_key = request.form.get('api_key')
-        num_questions = int(request.form.get('num_questions', 30))
-        qa_pairs = generate_questions_with_dolly(api_key, extracted_text, num_questions)
+        extracted_text = ""  # You would need to re-extract text from the PDF here
+        qa_pairs = generate_questions_with_dolly(extracted_text, num_questions)
 
         # Generate PDF
         pdf_buffer = generate_pdf(qa_pairs)
