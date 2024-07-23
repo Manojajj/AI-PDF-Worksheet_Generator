@@ -22,6 +22,14 @@
         <p>No questions and answers generated.</p>
     {% endif %}
 
+    <!-- Add a form to download the PDF -->
+    <form action="{{ url_for('download') }}" method="post">
+        <input type="hidden" name="api_key" value="{{ request.form['api_key'] }}">
+        <input type="hidden" name="pdf_file" value="{{ request.files['pdf_file'].read()|b64encode }}">
+        <input type="hidden" name="num_questions" value="{{ request.form['num_questions'] }}">
+        <button type="submit">Download PDF</button>
+    </form>
+
     <a href="{{ url_for('index') }}">Generate Another Worksheet</a>
 </body>
 </html>
