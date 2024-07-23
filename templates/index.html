@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Paper Generator</title>
+</head>
+<body>
+    <h1>Question Paper with Answers Generator using Dolly-v2-3b</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="api_key">Enter your API Key:</label><br>
+        <input type="password" id="api_key" name="api_key" required><br><br>
+
+        <label for="pdf_file">Upload PDF file:</label><br>
+        <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" required><br><br>
+
+        <label for="num_questions">Number of Questions:</label><br>
+        <input type="number" id="num_questions" name="num_questions" value="30" min="1"><br><br>
+
+        <input type="submit" value="Generate Worksheet">
+    </form>
+</body>
+</html>
