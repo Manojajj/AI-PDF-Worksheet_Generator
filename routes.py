@@ -1,7 +1,38 @@
-from flask import render_template, request, redirect, url_for, send_file
-from app import app
-from app.utils import generate_pdf, generate_questions_with_dolly
+from flask import Flask, render_template, request, redirect, url_for, send_file
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 import io
+from PyPDF2 import PdfReader
+from app import app
+from app.utils import generate_pdf
+
+# Load model and tokenizer
+tokenizer = AutoTokenizer.from_pretrained("databricks/dolly-v2-3b")
+model = AutoModelForCausalLM.from_pretrained("databricks/dolly-v2-3b")
+
+def generate_questions_with_dolly(text, num_questions=30):
+    # Prepare the prompt
+    prompt = f"Generate {num_questions} random questions and answers from the following text:\n{text}"
+    
+    # Tokenize input
+    inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
+    
+    # Generate responses
+    with torch.no_grad():
+        outputs = model.generate(**inputs, max_length=1500, num_return_sequences=1)
+    
+    # Decode generated text
+    generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    lines = generated_text.strip().split('\n')
+    
+    # Extract questions and answers
+    qa_pairs = []
+    for i in range(0, len(lines), 2):
+        question = lines[i].strip()
+        answer = lines[i + 1].strip() if (i + 1) < len(lines) else "No answer generated"
+        qa_pairs.append((question, answer))
+    
+    return qa_pairs
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -9,7 +40,6 @@ def index():
         uploaded_file = request.files.get('pdf_file')
         if uploaded_file and uploaded_file.filename.endswith('.pdf'):
             # Extract text from PDF
-            from PyPDF2 import PdfReader
             pdf_reader = PdfReader(uploaded_file)
             extracted_text = ""
             for page in pdf_reader.pages:
