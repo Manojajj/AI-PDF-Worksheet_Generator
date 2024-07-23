@@ -6,18 +6,16 @@
     <title>Question Paper Generator</title>
 </head>
 <body>
-    <h1>Question Paper with Answers Generator using Dolly-v2-3b</h1>
-    <form method="POST" enctype="multipart/form-data">
-        <label for="api_key">Enter your API Key:</label><br>
-        <input type="password" id="api_key" name="api_key" required><br><br>
-
-        <label for="pdf_file">Upload PDF file:</label><br>
+    <h1>Upload PDF and Generate Questions and Answers</h1>
+    
+    <form action="/" method="post" enctype="multipart/form-data">
+        <label for="pdf_file">Upload PDF:</label>
         <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" required><br><br>
-
-        <label for="num_questions">Number of Questions:</label><br>
+        
+        <label for="num_questions">Number of Questions:</label>
         <input type="number" id="num_questions" name="num_questions" value="30" min="1"><br><br>
-
-        <input type="submit" value="Generate Worksheet">
+        
+        <button type="submit">Generate Worksheet</button>
     </form>
 </body>
 </html>
